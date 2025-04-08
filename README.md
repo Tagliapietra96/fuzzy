@@ -13,9 +13,9 @@ Welcome to fuzzy – a Go package designed to perform fuzzy searches in slices o
 1. [Introduction](#introduction)
 2. [Features](#features)
 3. [Installation](#installation)
-Usage Examples
-Standard Fuzzy Search
-Levenshtein-Based Fuzzy Search
+4. [Usage Examples](#usage-examples)
+    * [Standard Fuzzy Search](#standard-fuzzy-search)
+    * [Levenshtein-Based Fuzzy Search](#levenshtein-based-fuzzy-search)
 API and Data Structures
 How It Works
 Use Cases
@@ -53,4 +53,10 @@ Install fuzzy using `go get`:
 go get github.com/Tagliapietra96/fuzzy 
 ```
 
+## Usage Examples
 
+Below are some structured examples to illustrate how fuzzy can be used. Inline comments indicate the expected output for clarity.
+
+### Standard Fuzzy Search
+
+### Levenshtein-Based Fuzzy Search
