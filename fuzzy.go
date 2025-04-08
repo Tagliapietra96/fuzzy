@@ -29,7 +29,7 @@ func SortMatches(m []Match) []Match {
 // By default, the search is case insensitive, but it can be made case sensitive by capitalizing the query.
 // This behavior isn't affected by the filters.
 //
-// It it possibile to add filters to the query (value), each filter must be separated by a space:
+// It it possible to add filters to the query (value), each filter must be separated by a space:
 //   - if the filter starts with *, the source line must contain the filter
 //   - if the filter starts with $, the source line must end with the filter
 //   - if the filter starts with ^, the source line must start with the filter
