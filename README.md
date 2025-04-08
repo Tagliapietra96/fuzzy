@@ -35,18 +35,18 @@ fuzzy is a Go package that brings the power of fuzzy matching to your applicatio
 
 ## Features
 
-* Smart Fuzzy Search:
+* **Smart Fuzzy Search:**
 
     Quickly search through a slice of strings and obtain scores that reflect how closely each string matches your query.
-* Levenshtein Distance Option:
+* **Levenshtein Distance Option:**
 
     When you need a more forgiving search (especially useful when handling typos), leverage the Levenshtein-based search ensuring at least 60% of the query is present.
-* Customizable Query Filtering:
+* **Customizable Query Filtering:**
 
     Enhance your query with filters directly within the query string:
     * `*filter` – requires the source to contain the filter.
     * `$filter` – requires the source to end with the filter.
     * `^filter` – requires the source to start with the filter.
-* Flexible Sorting:
+* **Flexible Sorting:**
 
     Use SortMatches to arrange results first by match score and then by the position within the source.
