@@ -21,9 +21,9 @@ Welcome to fuzzy – a Go package designed to perform fuzzy searches in slices o
     * [Primary Functions](#primary-functions)
 6. [How It Works](#how-it-works)
 7. [Use Cases](#use-cases)
-Inspiration
-Support the Project
-License
+8. [Inspiration](#inspiration)
+9. [Support the Project](#support-the-project)
+10. [License](#license)
 
 ## Introduction
 
@@ -194,3 +194,21 @@ type Match struct {
 * **CLI Tools:** Enhance command-line interfaces with real-time suggestions and autocompletion.
 * **Text Editors and IDEs:** Implement smart search functionalities for files, commands, or code snippets.
 * **Data Filtering Systems:** Quickly process and filter large datasets while handling typos or partial matches gracefully.
+
+## Inspiration
+
+Special thanks to the brilliant work at [lithammer/fuzzysearch](https://github.com/lithammer/fuzzysearch) for inspiring this project. Feel free to visit their repository and drop a star if you like what they’re doing!😊⭐
+
+## Support the Project
+
+If you find fuzzy useful, please give it a ⭐ on GitHub! Your support keeps us motivated and helps to further enhance the project. 🙌
+
+## License
+
+Distributed under the MIT License. See the [`LICENSE`](https://github.com/Tagliapietra96/fuzzy/blob/main/LICENSE) file for more details.
+
+---
+
+Happy coding and happy fuzzy matching! 🎉
+
+Feel free to reach out with any questions, issues, or suggestions. Enjoy the journey with fuzzy!
