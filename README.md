@@ -37,6 +37,9 @@ fuzzy is a Go package that brings the power of fuzzy matching to your applicatio
 * **Levenshtein Distance Option:**
 
     When you need a more forgiving search (especially useful when handling typos), leverage the Levenshtein-based search ensuring at least 60% of the query is present.
+* **Parallelized Chunk Processing:**
+
+    Efficiently handle large datasets with automatic parallelization through the `ChunkFind` and `ChunkLevenshteinFind` functions, which split work across multiple CPU cores for significantly improved performance.
 * **Customizable Query Filtering:**
 
     Enhance your query with filters directly within the query string:
@@ -56,6 +59,9 @@ go get github.com/Tagliapietra96/fuzzy
 ```
 
 ## Usage Examples
+
+> [!NOTE]
+> For larger datasets, you can use `ChunkFind` and `ChunkLevenshteinFind` functions which provide parallel processing by dividing the input into chunks. These functions have the same signature as their non-chunk counterparts but offer better performance on large collections.
 
 Below are some structured examples to illustrate how fuzzy can be used. Inline comments indicate the expected output for clarity.
 
@@ -171,6 +177,12 @@ type Match struct {
 * `SortMatches(m []Match) []Match`
 
     Orders the matches—first by score (ascending) and then by source position if scores are equal.
+* `ChunkFind(query string, source []string) []Match`
+
+    Parallelized version of Find that splits the source slice into chunks and processes them concurrently across multiple CPU cores, providing better performance on large datasets.
+* `ChunkLevenshteinFind(query string, source []string) []Match`
+
+    Parallelized version of LevenshteinFind that splits the source slice into chunks and processes them concurrently across multiple CPU cores, providing better performance on large datasets.
 
 ## How It Works
 

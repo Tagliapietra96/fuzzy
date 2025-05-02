@@ -9,10 +9,16 @@ import (
 	"unicode/utf8"
 )
 
+// ChunkFind performs a parallelized fuzzy search using the standard matching algorithm.
+// It splits the source slice into chunks and processes them concurrently for better performance
+// on large datasets, then combines the results.
 func ChunkFind(query string, source []string) []Match {
 	return chunkFind(query, source, Find)
 }
 
+// ChunkLevenshteinFind performs a parallelized fuzzy search using the Levenshtein distance algorithm.
+// It splits the source slice into chunks and processes them concurrently for better performance
+// on large datasets, then combines the results.
 func ChunkLevenshteinFind(query string, source []string) []Match {
 	return chunkFind(query, source, LevenshteinFind)
 }
