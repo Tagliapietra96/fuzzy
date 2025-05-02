@@ -284,6 +284,28 @@ func TestLevenshteinFind(t *testing.T) {
 	}
 }
 
+func BenchmarkChunkFind(b *testing.B) {
+	source := make([]string, 10000)
+	for i := range source {
+		source[i] = fmt.Sprintf("test%d", i)
+	}
+
+	for b.Loop() {
+		ChunkFind("test", source)
+	}
+}
+
+func BenchmarkChunkLevenshteinFind(b *testing.B) {
+	source := make([]string, 10000)
+	for i := range source {
+		source[i] = fmt.Sprintf("test%d", i)
+	}
+
+	for b.Loop() {
+		ChunkLevenshteinFind("tset", source)
+	}
+}
+
 func BenchmarkFind(b *testing.B) {
 	source := make([]string, 10000)
 	for i := range source {

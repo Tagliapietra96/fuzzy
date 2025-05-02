@@ -1,11 +1,57 @@
 package fuzzy
 
 import (
+	"runtime"
 	"slices"
 	"strings"
+	"sync"
 	"unicode"
 	"unicode/utf8"
 )
+
+func ChunkFind(query string, source []string) []Match {
+	return chunkFind(query, source, Find)
+}
+
+func ChunkLevenshteinFind(query string, source []string) []Match {
+	return chunkFind(query, source, LevenshteinFind)
+}
+
+// chunkFind is a helper function that splits the source into chunks and runs the algorithm on each chunk.
+func chunkFind(query string, source []string, algo func(q string, s []string) []Match) []Match {
+	if runtime.NumCPU()/2 <= 1 || len(source) <= runtime.NumCPU()*500 {
+		return algo(query, source)
+	}
+
+	var wg sync.WaitGroup
+	cs := len(source) / (runtime.NumCPU() / 2)
+	cc := (len(source) + cs - 1) / cs
+	rChan := make(chan []Match, cc)
+
+	wg.Add(cc)
+	for i := range cc {
+		go func(chunk []string) {
+			defer wg.Done()
+			mm := algo(query, chunk)
+			for j := range mm {
+				mm[j].Position += i * cs
+			}
+			rChan <- mm
+		}(source[i*cs : min(((i*cs)+cs), len(source))])
+	}
+
+	go func() {
+		wg.Wait()
+		close(rChan)
+	}()
+
+	r := make([]Match, 0, len(source))
+	for mm := range rChan {
+		r = append(r, mm...)
+	}
+
+	return r
+}
 
 // SortMatches sorts the matches by score and position.
 //   - if the scores are equal, the position is used to determine the order
