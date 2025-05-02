@@ -19,12 +19,14 @@ func ChunkLevenshteinFind(query string, source []string) []Match {
 
 // chunkFind is a helper function that splits the source into chunks and runs the algorithm on each chunk.
 func chunkFind(query string, source []string, algo func(q string, s []string) []Match) []Match {
-	if runtime.NumCPU()/2 <= 1 || len(source) <= runtime.NumCPU()*500 {
+	cpu := min(4, runtime.NumCPU()/2)
+
+	if cpu <= 1 || len(source) <= cpu*500 {
 		return algo(query, source)
 	}
 
 	var wg sync.WaitGroup
-	cs := len(source) / (runtime.NumCPU() / 2)
+	cs := len(source) / cpu
 	cc := (len(source) + cs - 1) / cs
 	rChan := make(chan []Match, cc)
 
