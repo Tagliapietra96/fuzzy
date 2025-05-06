@@ -135,6 +135,34 @@ func find(q string, s []string, fn func(string, string, func(string) (string, bo
 	return m
 }
 
+// MatchScore calculates the match score between a query and a source string using
+// the standard matching algorithm. It returns the score value where lower is better.
+// A negative score indicates no match.
+// This function handles the query preprocessing and filter application internally.
+func MatchScore(queryValue, source string) int {
+	return score(queryValue, source, matchScore)
+}
+
+// LevenshteinScore calculates the match score between a query and a source string using
+// the Levenshtein distance algorithm. It returns the score value where lower is better.
+// A negative score indicates no match.
+// This function is useful for approximate matching when queries or sources might contain typos.
+// This function handles the query preprocessing and filter application internally.
+func LevenshteinScore(queryValue, source string) int {
+	return score(queryValue, source, func(q, s string, f func(string) (string, bool)) int {
+		return levenshteinScore(q, s, f, make([]int, len(q)+1, len(q)+1))
+	})
+}
+
+// score is a helper function that processes the query using the input function and applies
+// the provided scoring function to calculate the match score between the query and source.
+// It's used internally by MatchScore and LevenshteinScore.
+func score(q string, s string, fn func(string, string, func(string) (string, bool)) int) int {
+	var f func(string) (string, bool)
+	q, f = input(q)
+	return fn(q, s, f)
+}
+
 // matchScore calculates the score of the match.
 func matchScore(q, s string, f func(string) (string, bool)) int {
 	var found bool

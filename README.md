@@ -40,6 +40,9 @@ fuzzy is a Go package that brings the power of fuzzy matching to your applicatio
 * **Parallelized Chunk Processing:**
 
     Efficiently handle large datasets with automatic parallelization through the `ChunkFind` and `ChunkLevenshteinFind` functions, which split work across multiple CPU cores for significantly improved performance.
+* **Direct String Scoring:**
+
+    Get matching scores between individual strings with `MatchScore` and `LevenshteinScore` functions without searching through entire collections.
 * **Customizable Query Filtering:**
 
     Enhance your query with filters directly within the query string:
@@ -105,6 +108,9 @@ func main() {
     //  - "cat" -> Match{Score:1, Position: 3}
     //  - "cow" -> Not a match! the line must have all the runes of the query and end with "t"
     matchesWithFilter := fuzzy.Find("$t ca", data)
+
+    // You can also directly score individual strings without searching through slices
+    score := fuzzy.MatchScore("ca", "cart") // Returns 2
 }
 ```
 
@@ -149,6 +155,9 @@ func main() {
     //  - "cat" -> Match{Score:1, Position: 3}
     //  - "cow" -> Match{Score: 1, Position: 4} - Not a match! the line don't and end with "t"
     matchesWithFilter := fuzzy.LevenshteinFind("$t ca", data)
+
+    // You can also directly score individual strings without searching through slices
+    levenScore := fuzzy.LevenshteinScore("caw", "cat") // Returns 1
 }
 ```
 
@@ -174,6 +183,12 @@ type Match struct {
 * `LevenshteinFind(queryValue string, source []string) []Match`
 
     Uses the Levenshtein distance for a more flexible, approximate matching, ideal for handling typos. A match requires at least 60% similarity with the query.
+* `MatchScore(queryValue string, source string) int`
+
+    Calculates the match score between a single query and source string using the standard matching algorithm. Returns the score where lower is better, or -1 if there's no match.
+* `LevenshteinScore(queryValue string, source string) int`
+
+    Calculates the match score between a single query and source string using the Levenshtein distance algorithm. Returns the score where lower is better, or -1 if there's no match.
 * `SortMatches(m []Match) []Match`
 
     Orders the matches—first by score (ascending) and then by source position if scores are equal.

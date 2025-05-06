@@ -245,6 +245,146 @@ func TestFind(t *testing.T) {
 	}
 }
 
+func TestMatchScore(t *testing.T) {
+	testCases := []struct {
+		name     string
+		query    string
+		source   string
+		expected int
+	}{
+		{
+			name:     "Empty query",
+			query:    "",
+			source:   "test",
+			expected: 0,
+		},
+		{
+			name:     "Exact match",
+			query:    "test",
+			source:   "test",
+			expected: 0,
+		},
+		{
+			name:     "Substring match",
+			query:    "test",
+			source:   "testing",
+			expected: 3,
+		},
+		{
+			name:     "Fuzzy match",
+			query:    "tst",
+			source:   "test",
+			expected: 2,
+		},
+		{
+			name:     "Case insensitive match",
+			query:    "test",
+			source:   "TEST",
+			expected: 0,
+		},
+		{
+			name:     "Case sensitive match",
+			query:    "Test",
+			source:   "test",
+			expected: -1,
+		},
+		{
+			name:     "No match",
+			query:    "xyz",
+			source:   "test",
+			expected: -1,
+		},
+		{
+			name:     "Query with filter - success",
+			query:    "*est i",
+			source:   "testing",
+			expected: 3,
+		},
+		{
+			name:     "Query with filter - fail",
+			query:    "*xyz",
+			source:   "testing",
+			expected: -1,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			result := MatchScore(tc.query, tc.source)
+			if result != tc.expected {
+				t.Errorf("Expected %v, got %v", tc.expected, result)
+			}
+		})
+	}
+}
+
+func TestLevenshteinScore(t *testing.T) {
+	testCases := []struct {
+		name     string
+		query    string
+		source   string
+		expected int
+	}{
+		{
+			name:     "Empty query",
+			query:    "",
+			source:   "test",
+			expected: 0,
+		},
+		{
+			name:     "Exact match",
+			query:    "test",
+			source:   "test",
+			expected: 0,
+		},
+		{
+			name:     "One character difference",
+			query:    "tset",
+			source:   "test",
+			expected: 2,
+		},
+		{
+			name:     "Two character difference",
+			query:    "tast",
+			source:   "tent",
+			expected: -1,
+		},
+		{
+			name:     "Case insensitive match",
+			query:    "test",
+			source:   "TEST",
+			expected: 0,
+		},
+		{
+			name:     "Substring presence",
+			query:    "test",
+			source:   "testing",
+			expected: 3,
+		},
+		{
+			name:     "Query with filter - success",
+			query:    "*est i",
+			source:   "testing",
+			expected: 3,
+		},
+		{
+			name:     "Query with filter - fail",
+			query:    "*xyz",
+			source:   "testing",
+			expected: -1,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			result := LevenshteinScore(tc.query, tc.source)
+			if result != tc.expected {
+				t.Errorf("Expected %v, got %v", tc.expected, result)
+			}
+		})
+	}
+}
+
 func TestLevenshteinFind(t *testing.T) {
 	testCases := []struct {
 		name     string
@@ -325,6 +465,48 @@ func BenchmarkLevenshteinFind(b *testing.B) {
 
 	for b.Loop() {
 		LevenshteinFind("tset", source)
+	}
+}
+
+func BenchmarkMatchScore(b *testing.B) {
+	testCases := []struct {
+		name   string
+		query  string
+		source string
+	}{
+		{"Exact match", "test", "test"},
+		{"Substring match", "test", "testing"},
+		{"Fuzzy match", "tst", "testing"},
+		{"Query with filter", "*est i", "testing"},
+	}
+
+	for _, tc := range testCases {
+		b.Run(tc.name, func(b *testing.B) {
+			for b.Loop() {
+				MatchScore(tc.query, tc.source)
+			}
+		})
+	}
+}
+
+func BenchmarkLevenshteinScore(b *testing.B) {
+	testCases := []struct {
+		name   string
+		query  string
+		source string
+	}{
+		{"Exact match", "test", "test"},
+		{"One character difference", "tast", "test"},
+		{"Fuzzy match", "tst", "testing"},
+		{"Query with filter", "*est i", "testing"},
+	}
+
+	for _, tc := range testCases {
+		b.Run(tc.name, func(b *testing.B) {
+			for b.Loop() {
+				LevenshteinScore(tc.query, tc.source)
+			}
+		})
 	}
 }
 
