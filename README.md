@@ -49,6 +49,8 @@ fuzzy is a Go package that brings the power of fuzzy matching to your applicatio
     * `*filter` – requires the source to contain the filter.
     * `$filter` – requires the source to end with the filter.
     * `^filter` – requires the source to start with the filter.
+    * `?filter` – requires the source to match the regex pattern. 
+    * `!filter` – negates any filter type (e.g., `!*filter`, `!$filter`, `!^filter`, `!?filter`).
 * **Flexible Sorting:**
 
     Use SortMatches to arrange results first by match score and then by the position within the source.
