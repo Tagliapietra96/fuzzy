@@ -121,6 +121,62 @@ func TestInput(t *testing.T) {
 			expectedResult: "hello",
 			expectFound:    false,
 		},
+		{
+			name:           "Regex modifier match",
+			query:          "?\\w+@\\w+\\.\\w+",
+			expectedQuery:  "",
+			line:           "contact me at test@example.com please",
+			expectedResult: "contactmeattest@example.complease",
+			expectFound:    true,
+		},
+		{
+			name:           "Regex modifier no match",
+			query:          "?\\d{3}-\\d{2}-\\d{4}",
+			expectedQuery:  "",
+			line:           "no ssn here",
+			expectedResult: "nossnhere",
+			expectFound:    false,
+		},
+		{
+			name:           "Negated contains modifier",
+			query:          "!*xyz",
+			expectedQuery:  "",
+			line:           "hello world",
+			expectedResult: "helloworld",
+			expectFound:    true,
+		},
+		{
+			name:           "Negated starts with modifier",
+			query:          "!^hello",
+			expectedQuery:  "",
+			line:           "world hello",
+			expectedResult: "worldhello",
+			expectFound:    true,
+		},
+		{
+			name:           "Negated ends with modifier",
+			query:          "!$test",
+			expectedQuery:  "",
+			line:           "test hello",
+			expectedResult: "testhello",
+			expectFound:    true,
+		},
+		{
+			name:           "Negated regex modifier",
+			query:          "!?\\d+",
+			expectedQuery:  "",
+			line:           "only text here",
+			expectedResult: "onlytexthere",
+			expectFound:    true,
+		},
+		{
+			name:           "Complex query with negation and regex",
+			query:          "search !*avoid ?\\w+@\\w+\\.\\w+",
+			expectedQuery:  "search",
+			line:           "search for email@example.com",
+			expectedResult: "searchforemail@example.com",
+			expectFound:    true,
+		},
 	}
 
 	for _, tc := range testCases {
@@ -224,6 +280,24 @@ func TestFind(t *testing.T) {
 			query:    "*this test",
 			source:   []string{"this is a test", "another test"},
 			expected: []Match{{Score: 3, Position: 0}},
+		},
+		{
+			name:     "Filter with regex",
+			query:    "?\\w+@\\w+\\.\\w+ email",
+			source:   []string{"contact: email@example.com", "no email here"},
+			expected: []Match{{Score: 20, Position: 0}},
+		},
+		{
+			name:     "Filter with negation",
+			query:    "!*another test",
+			source:   []string{"this is a test", "another example"},
+			expected: []Match{{Score: 7, Position: 0}},
+		},
+		{
+			name:     "Complex query with negation and regex",
+			query:    "test !*another ?\\w+",
+			source:   []string{"test something", "another test"},
+			expected: []Match{{Score: 9, Position: 0}},
 		},
 	}
 

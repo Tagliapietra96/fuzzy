@@ -1,6 +1,7 @@
 package fuzzy
 
 import (
+	"regexp"
 	"runtime"
 	"slices"
 	"strings"
@@ -87,8 +88,12 @@ func SortMatches(m []Match) []Match {
 //   - if the filter starts with *, the source line must contain the filter
 //   - if the filter starts with $, the source line must end with the filter
 //   - if the filter starts with ^, the source line must start with the filter
+//   - if the filter starts with ?, the source line must match the regex (pay attention to the escape characters if you are using regex)
+//   - if tehe filter starts with !, the source line must not contain the filter (supported all the above)
 //
 // e.g. "query *filter1 $filter2 ^filter3" or "*filter1 $filter2 query ^filter3"
+// e.g. `query ?(\w+)@(\w+)\.(\w+)` or "?(\w+)@(\w+)\.(\w+) query"
+// e.g. "query !filter1" or "!$filter1 query !^filter2 !*filter3" or "query !?(\w+)@(\w+)\.(\w+)"
 //
 // The score are calculated in the following way:
 //   - if the query is equal to the value, the score is 0
@@ -270,7 +275,7 @@ func input(q string) (string, func(string) (string, bool)) {
 	b := &strings.Builder{}
 
 	for w := range strings.SplitSeq(q, " ") {
-		if strings.HasPrefix(w, "*") || strings.HasPrefix(w, "$") || strings.HasPrefix(w, "^") {
+		if strings.HasPrefix(w, "*") || strings.HasPrefix(w, "$") || strings.HasPrefix(w, "^") || strings.HasPrefix(w, "!") || strings.HasPrefix(w, "?") {
 			f = append(f, w)
 		} else {
 			b.WriteString(w)
@@ -294,18 +299,31 @@ func input(q string) (string, func(string) (string, bool)) {
 		}
 
 		found := true
+		reverse := false
 		for _, fv := range f {
 			if !found {
 				return "", false
 			}
+
+			fv, reverse = strings.CutPrefix(fv, "!")
 			switch {
-			case strings.HasPrefix(fv, "*"):
-				b, a, fo := strings.Cut(s, fv[1:])
-				s, found = b+a, fo
+			case strings.HasPrefix(fv, "?"):
+				re, err := regexp.Compile(fv[1:])
+				if err != nil {
+					return "", false
+				}
+				found = re.MatchString(s)
 			case strings.HasPrefix(fv, "$"):
 				s, found = strings.CutSuffix(s, fv[1:])
 			case strings.HasPrefix(fv, "^"):
 				s, found = strings.CutPrefix(s, fv[1:])
+			default:
+				b, a, fo := strings.Cut(s, fv[1:])
+				s, found = b+a, fo
+			}
+
+			if reverse {
+				found = !found
 			}
 		}
 
